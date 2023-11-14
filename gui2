@@ -1,0 +1,212 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+void gerarNovosNumeros(int total) {
+    FILE *arquivoNovo = fopen("novos_numeros.txt", "w");
+    if (arquivoNovo == NULL) {
+        printf("Erro ao abrir o arquivo.");
+        exit(1);
+    }
+
+    srand(time(NULL));
+    for (int i = 0; i < total; i++) {
+        int novoNum = rand() % 1000; // Gerando números aleatórios até 999
+        fprintf(arquivoNovo, "%d ", novoNum);
+    }
+
+    fclose(arquivoNovo);
+}
+
+int buscaSequencial(int num, int total) {
+    FILE *arquivoSeq = fopen("novos_numeros.txt", "r");
+    if (arquivoSeq == NULL) {
+        printf("Erro ao abrir o arquivo.");
+        exit(1);
+    }
+
+    int elementoSeq;
+    while (fscanf(arquivoSeq, "%d", &elementoSeq) != EOF) {
+        if (elementoSeq == num) {
+            fclose(arquivoSeq);
+            return 1; // Elemento encontrado
+        }
+    }
+
+    fclose(arquivoSeq);
+    return 0; // Elemento não encontrado
+}
+
+int buscaSentinela(int num, int total) {
+    FILE *arquivoSent = fopen("novos_numeros.txt", "r");
+    if (arquivoSent == NULL) {
+        printf("Erro ao abrir o arquivo.");
+        exit(1);
+    }
+
+    int ult, elementoSent;
+    fscanf(arquivoSent, "%d", &ult);
+
+    while (ult != num) {
+        if (fscanf(arquivoSent, "%d", &elementoSent) == EOF)
+            break;
+        if (elementoSent == num) {
+            fclose(arquivoSent);
+            return 1; // Elemento encontrado
+        }
+    }
+
+    fclose(arquivoSent);
+    return 0; // Elemento não encontrado
+}
+
+int buscaBinaria(int num, int total) {
+    FILE *arquivoBin = fopen("novos_numeros.txt", "r");
+    if (arquivoBin == NULL) {
+        printf("Erro ao abrir o arquivo.");
+        exit(1);
+    }
+
+    int inicio = 0, fim = total - 1, meio, elementoBin;
+
+    while (inicio <= fim) {
+        meio = (inicio + fim) / 2;
+        fseek(arquivoBin, meio * sizeof(int), SEEK_SET);
+        fscanf(arquivoBin, "%d", &elementoBin);
+
+        if (elementoBin == num) {
+            fclose(arquivoBin);
+            return 1; // Elemento encontrado
+        } else if (elementoBin < num) {
+            inicio = meio + 1;
+        } else {
+            fim = meio - 1;
+        }
+    }
+
+    fclose(arquivoBin);
+    return 0; // Elemento não encontrado
+}
+
+void ordenarBubble(int array[], int tamanho) {
+    clock_t inicioBubble = clock();
+
+    for (int i = 0; i < tamanho - 1; i++) {
+        for (int j = 0; j < tamanho - i - 1; j++) {
+            if (array[j] > array[j + 1]) {
+                int tempBubble = array[j];
+                array[j] = array[j + 1];
+                array[j + 1] = tempBubble;
+            }
+        }
+    }
+
+    clock_t fimBubble = clock();
+    double tempoBubble = (double)(fimBubble - inicioBubble) / CLOCKS_PER_SEC;
+    printf("Tempo Bubble Sort: %.6f segundos\n", tempoBubble);
+}
+
+void ordenarQuick(int array[], int inicio, int fim) {
+    if (inicio < fim) {
+        int pivot = array[fim];
+        int i = inicio - 1;
+
+        for (int j = inicio; j < fim; j++) {
+            if (array[j] < pivot) {
+                i++;
+                int temp = array[i];
+                array[i] = array[j];
+                array[j] = temp;
+            }
+        }
+
+        int temp = array[i + 1];
+        array[i + 1] = array[fim];
+        array[fim] = temp;
+
+        int pivot_pos = i + 1;
+
+        ordenarQuick(array, inicio, pivot_pos - 1);
+        ordenarQuick(array, pivot_pos + 1, fim);
+    }
+}
+
+void exibirArray(int array[], int tamanho) {
+    for (int i = 0; i < tamanho; i++) {
+        printf("%d ", array[i]);
+    }
+    printf("\n");
+}
+
+// Funções Recursivas
+int calcularFatorial(int n) {
+    if (n == 0 || n == 1) {
+        return 1;
+    } else {
+        return n * calcularFatorial(n - 1);
+    }
+}
+
+int calcularSomatorio(int n) {
+    if (n == 0) {
+        return 0;
+    } else {
+        return n + calcularSomatorio(n - 1);
+    }
+}
+
+int calcularFibonacci(int n) {
+    if (n <= 1) {
+        return n;
+    } else {
+        return calcularFibonacci(n - 1) + calcularFibonacci(n - 2);
+    }
+}
+
+int main() {
+    int totalNumeros;
+    printf("Quantidade de números a gerar: ");
+    scanf("%d", &totalNumeros);
+
+    gerarNovosNumeros(totalNumeros);
+
+    int escolha;
+    printf("Escolha a operação:\n");
+    printf("1.  busca de elemento\n");
+    printf("2.  classificação de elementos\n");
+    printf("3. Operações de comparação entre algoritmos iterativos e recursivos\n");
+    scanf("%d", &escolha);
+
+    switch (escolha) {
+        case 1:
+            // Implemente as chamadas das funções de busca e registro dos tempos
+            break;
+
+        case 2:
+            // Implemente as chamadas das funções de classificação e registro dos tempos
+            break;
+
+        case 3:
+            // Teste de algoritmos recursivos
+            int numeroFatorial, numeroSomatorio, numeroFibonacci;
+            printf("Digite um número para calcular o fatorial: ");
+            scanf("%d", &numeroFatorial);
+            printf("Fatorial de %d é: %d\n", numeroFatorial, calcularFatorial(numeroFatorial));
+
+            printf("Digite um número para calcular o somatório: ");
+            scanf("%d", &numeroSomatorio);
+            printf("Somatório de 1 até %d é: %d\n", numeroSomatorio, calcularSomatorio(numeroSomatorio));
+
+            printf("Digite um número para calcular o termo na sequência de Fibonacci: ");
+            scanf("%d", &numeroFibonacci);
+            printf("O termo %d na sequência de Fibonacci é: %d\n", numeroFibonacci, calcularFibonacci(numeroFibonacci));
+
+            break;
+
+        default:
+            printf("Opção inválida.\n");
+            break;
+    }
+
+    return 0;
+}
